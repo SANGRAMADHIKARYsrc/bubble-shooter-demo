@@ -314,12 +314,12 @@ const GP_GOLD = "#FFD94A";
 const GP_WOOD = "#C9823A";
 
 const BUBBLE_COLORS = [
-  { b: '#FF3D4F', l: '#FFA0A8', d: '#B31220', g: '#FF7D8A', s: '#FF6070' },  // 0 PINK/RED
-  { b: '#FFA320', l: '#FFE0B0', d: '#B36700', g: '#FFC570', s: '#FFB448' },  // 1 ORANGE
-  { b: '#FFD93B', l: '#FFF5C0', d: '#B39100', g: '#FFE880', s: '#FFE060' },  // 2 YELLOW
-  { b: '#39E75F', l: '#A5F7B8', d: '#18A336', g: '#80F39C', s: '#60EC80' },  // 3 GREEN
-  { b: '#4D9FFF', l: '#BDE0FF', d: '#005BBF', g: '#94C5FF', s: '#73B2FF' },  // 4 BLUE
-  { b: '#C845FF', l: '#F0C0FF', d: '#8600C0', g: '#E294FF', s: '#D46CFF' }   // 5 PURPLE
+  { b: '#FF1E56', l: '#FFF0F3', d: '#8C002A', g: '#FF4A82', s: '#FF7D8A' },  // 0 RED
+  { b: '#FF7A00', l: '#FFF3E0', d: '#993D00', g: '#FFA347', s: '#FFB448' },  // 1 ORANGE
+  { b: '#FFD600', l: '#FFFFE0', d: '#997A00', g: '#FFE147', s: '#FFE060' },  // 2 YELLOW
+  { b: '#00E676', l: '#E8F8F0', d: '#007A3E', g: '#33FF9E', s: '#60EC80' },  // 3 GREEN
+  { b: '#00B0FF', l: '#E1F5FE', d: '#0060B0', g: '#40C4FF', s: '#73B2FF' },  // 4 BLUE
+  { b: '#AA00FF', l: '#F3E5F5', d: '#5D008C', g: '#D500F9', s: '#E294FF' }   // 5 PURPLE
 ];
 
 // Helper Utilities
@@ -972,56 +972,76 @@ function draw3DBubbleNode(coordX, coordY, colorIdx, radius, alpha, scale = 1.0) 
   ctx.save();
   ctx.globalAlpha = alpha === undefined ? 1.0 : alpha;
 
-  // Drop Shadow
+  // 1. Soft Shadow Underneath (Offset, squashed ellipse for realistic 3D floor shadow)
   ctx.beginPath();
-  ctx.arc(coordX + r * 0.15, coordY + r * 0.2, r, 0, TAU);
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.18)';
+  ctx.ellipse(coordX + r * 0.12, coordY + r * 0.22, r * 0.95, r * 0.85, 0, 0, TAU);
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.28)';
   ctx.fill();
 
-  // Outer radial light scatter
-  const outerGlow = ctx.createRadialGradient(coordX, coordY, r * 0.3, coordX, coordY, r * 1.1);
-  outerGlow.addColorStop(0, col.g + '00');
-  outerGlow.addColorStop(0.5, col.s + '20');
+  // 2. Bright Outer Glow (Saturated candy aura)
+  const outerGlow = ctx.createRadialGradient(coordX, coordY, r * 0.85, coordX, coordY, r * 1.35);
+  outerGlow.addColorStop(0, col.g + '55');
+  outerGlow.addColorStop(0.5, col.g + '20');
   outerGlow.addColorStop(1, col.g + '00');
   ctx.fillStyle = outerGlow;
   ctx.beginPath();
-  ctx.arc(coordX, coordY, r * 1.1, 0, TAU);
+  ctx.arc(coordX, coordY, r * 1.35, 0, TAU);
   ctx.fill();
 
-  // Glass sphere body gradient
-  const sphereBody = ctx.createRadialGradient(coordX - r * 0.28, coordY - r * 0.28, r * 0.05, coordX, coordY, r);
+  // 3. Main Glass Sphere Body (3D radial gradient from bright top-left to deep shadow)
+  const sphereBody = ctx.createRadialGradient(coordX - r * 0.22, coordY - r * 0.22, r * 0.05, coordX, coordY, r);
   sphereBody.addColorStop(0, col.l);
-  sphereBody.addColorStop(0.55, col.b);
-  sphereBody.addColorStop(0.9, col.d);
-  sphereBody.addColorStop(1, 'rgba(0, 0, 0, 0.45)');
+  sphereBody.addColorStop(0.35, col.b);
+  sphereBody.addColorStop(0.85, col.d);
+  sphereBody.addColorStop(1, '#08000a');
   ctx.fillStyle = sphereBody;
   ctx.beginPath();
   ctx.arc(coordX, coordY, r, 0, TAU);
   ctx.fill();
 
-  // Environmental reflection crescent highlight
+  // 4. Soft Inner Glow (creates depth and juicy transparency)
+  const innerGlow = ctx.createRadialGradient(coordX + r * 0.15, coordY + r * 0.2, r * 0.1, coordX + r * 0.1, coordY + r * 0.15, r * 0.85);
+  innerGlow.addColorStop(0, col.g + '88');
+  innerGlow.addColorStop(0.6, col.b + '20');
+  innerGlow.addColorStop(1, col.g + '00');
+  ctx.fillStyle = innerGlow;
   ctx.beginPath();
-  ctx.arc(coordX, coordY, r * 0.9, -2.4, -0.6);
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
-  ctx.lineWidth = r * 0.08;
-  ctx.stroke();
-
-  // Glossy highlight shine
-  const glossShine = ctx.createRadialGradient(coordX - r * 0.3, coordY - r * 0.3, 0, coordX - r * 0.2, coordY - r * 0.2, r * 0.55);
-  glossShine.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
-  glossShine.addColorStop(0.3, 'rgba(255, 255, 255, 0.4)');
-  glossShine.addColorStop(1, 'rgba(255, 255, 255, 0)');
-  ctx.fillStyle = glossShine;
-  ctx.beginPath();
-  ctx.arc(coordX - r * 0.2, coordY - r * 0.2, r * 0.55, 0, TAU);
+  ctx.arc(coordX, coordY, r * 0.95, 0, TAU);
   ctx.fill();
 
-  // Soft secondary rim reflection
+  // 5. Crescent reflection highlight (environmental edge lighting)
   ctx.beginPath();
-  ctx.arc(coordX, coordY, r - 0.8, 0, TAU);
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
-  ctx.lineWidth = 0.8;
+  ctx.arc(coordX, coordY, r * 0.86, 0.4, 2.5);
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+  ctx.lineWidth = r * 0.07;
+  ctx.lineCap = 'round';
   ctx.stroke();
+
+  // 6. Strong Specular Highlight (Primary top-left glossy shine)
+  const mainHighlight = ctx.createRadialGradient(
+    0, 0, 0,
+    0.05 * r, 0.05 * r, r * 0.45
+  );
+  mainHighlight.addColorStop(0, 'rgba(255, 255, 255, 0.98)');
+  mainHighlight.addColorStop(0.25, 'rgba(255, 255, 255, 0.85)');
+  mainHighlight.addColorStop(0.65, 'rgba(255, 255, 255, 0.2)');
+  mainHighlight.addColorStop(1, 'rgba(255, 255, 255, 0)');
+  
+  ctx.save();
+  ctx.translate(coordX - r * 0.28, coordY - r * 0.28);
+  ctx.rotate(-PI / 4);
+  ctx.scale(1.4, 0.85);
+  ctx.fillStyle = mainHighlight;
+  ctx.beginPath();
+  ctx.arc(0, 0, r * 0.24, 0, TAU);
+  ctx.fill();
+  ctx.restore();
+
+  // 7. Secondary Specular Highlight (Tiny pin reflection at bottom-right)
+  ctx.beginPath();
+  ctx.arc(coordX + r * 0.38, coordY + r * 0.38, r * 0.09, 0, TAU);
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+  ctx.fill();
 
   ctx.restore();
 }
