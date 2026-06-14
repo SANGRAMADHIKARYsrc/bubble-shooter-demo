@@ -93,11 +93,11 @@ body {
   border-radius: 50%;
   animation: lbounce 0.8s ease-in-out infinite;
 }
-.lb:nth-child(1) { background: #FF3D4F; animation-delay: 0s; }
-.lb:nth-child(2) { background: #FFA320; animation-delay: 0.15s; }
-.lb:nth-child(3) { background: #FFD93B; animation-delay: 0.3s; }
-.lb:nth-child(4) { background: #39E75F; animation-delay: 0.45s; }
-.lb:nth-child(5) { background: #4D9FFF; animation-delay: 0.6s; }
+.lb:nth-child(1) { background: #FF1E56; animation-delay: 0s; }
+.lb:nth-child(2) { background: #FFD600; animation-delay: 0.15s; }
+.lb:nth-child(3) { background: #00E676; animation-delay: 0.3s; }
+.lb:nth-child(4) { background: #00B0FF; animation-delay: 0.45s; }
+.lb:nth-child(5) { background: #AA00FF; animation-delay: 0.6s; }
 
 @keyframes lbounce {
   0%, 100% {
@@ -315,11 +315,10 @@ const GP_WOOD = "#C9823A";
 
 const BUBBLE_COLORS = [
   { b: '#FF1E56', l: '#FFF0F3', d: '#8C002A', g: '#FF4A82', s: '#FF7D8A' },  // 0 RED
-  { b: '#FF7A00', l: '#FFF3E0', d: '#993D00', g: '#FFA347', s: '#FFB448' },  // 1 ORANGE
-  { b: '#FFD600', l: '#FFFFE0', d: '#997A00', g: '#FFE147', s: '#FFE060' },  // 2 YELLOW
-  { b: '#00E676', l: '#E8F8F0', d: '#007A3E', g: '#33FF9E', s: '#60EC80' },  // 3 GREEN
-  { b: '#00B0FF', l: '#E1F5FE', d: '#0060B0', g: '#40C4FF', s: '#73B2FF' },  // 4 BLUE
-  { b: '#AA00FF', l: '#F3E5F5', d: '#5D008C', g: '#D500F9', s: '#E294FF' }   // 5 PURPLE
+  { b: '#FFD600', l: '#FFFFE0', d: '#997A00', g: '#FFE147', s: '#FFE060' },  // 1 YELLOW
+  { b: '#00E676', l: '#E8F8F0', d: '#007A3E', g: '#33FF9E', s: '#60EC80' },  // 2 GREEN
+  { b: '#00B0FF', l: '#E1F5FE', d: '#0060B0', g: '#40C4FF', s: '#73B2FF' },  // 3 BLUE
+  { b: '#AA00FF', l: '#F3E5F5', d: '#5D008C', g: '#D500F9', s: '#E294FF' }   // 4 PURPLE
 ];
 
 // Helper Utilities
@@ -353,7 +352,7 @@ for (let i = 0; i < 8; i++) {
     vy: randomRange(-0.4, -0.15),
     vx: randomRange(-0.2, 0.2),
     a: randomRange(0.05, 0.15),
-    ci: randomRangeInt(0, 6)
+    ci: randomRangeInt(0, 5)
   });
 }
 
